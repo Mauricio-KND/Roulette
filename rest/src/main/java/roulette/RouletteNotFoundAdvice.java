@@ -16,3 +16,4 @@ class RouletteNotFoundAdvice {
 		return ex.getMessage();
 	}
 }
+
