@@ -20,7 +20,7 @@ public class RequestBetOnRoulette {
         return betType;
     }
 
-    public boolean isColor () {
+    public boolean getColor () {
         return color;
     }
 

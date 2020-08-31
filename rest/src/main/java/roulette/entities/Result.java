@@ -1,8 +1,8 @@
 package roulette.entities;
 
 public enum Result {
-    Succeed("Succeed"),
-    Failed("Failed");
+    Succeed("Succeed Open Roulette number "),
+    Failed("Failed or not Found Roulette number ");
 
     public String result;
 

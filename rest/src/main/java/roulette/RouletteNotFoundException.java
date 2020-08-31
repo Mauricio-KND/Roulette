@@ -1,8 +1,10 @@
 package roulette;
 
-class RouletteNotFoundException extends RuntimeException {
+import roulette.entities.Result;
 
-	RouletteNotFoundException ( Long id) {
-		super("Could not find roulette " + id);
+public class RouletteNotFoundException extends RuntimeException {
+
+	public RouletteNotFoundException ( Long id ) {
+		super(Result.Failed.name() + id);
 	}
 }

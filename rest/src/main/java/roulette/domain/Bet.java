@@ -1,5 +1,17 @@
 package roulette.domain;
 
+import roulette.RouletteRepository;
+import roulette.entities.BetEntity;
+import roulette.entities.RouletteEntity;
+import roulette.entities.Status;
+import roulette.entities.UserEntity;
+import roulette.mapper.Mappers;
+import roulette.presentation.RequestBetOnRoulette;
+import roulette.presentation.Response;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class Bet {
 
     private Long id;
@@ -55,5 +67,36 @@ public class Bet {
 
     public void setBetNumber ( int betNumber ) {
         this.betNumber = betNumber;
+    }
+
+    public Response<String> betOnRoulette( RouletteRepository repository,  RequestBetOnRoulette request) {
+        RouletteEntity rouletteEntity = new Roulette().getRouletteEntity(repository, request.getRouletteId());
+        Response<String> response = new Response<>();
+
+        if (rouletteEntity.getStatus().equals(Status.OPEN.name())) {
+            boolean isColor = request.getBetType() == 0;
+            BetEntity betEntity = new BetEntity();
+            betEntity.setBetAmount(request.getRouletteBetAmount());
+            if (isColor) {
+                betEntity.setColor(request.getColor());
+            } else {
+                betEntity.setBetNumber(request.getRouletteBetNumber());
+            }
+            betEntity.setRouletteEntity(rouletteEntity);
+            betEntity.setUserEntity(new User().createUser());
+            Mappers.rouletteMapper(rouletteEntity).getListBet().add(betEntity);
+            List<BetEntity> betEntities = new ArrayList<>();
+            betEntities.add(betEntity);
+            Mappers.rouletteMapper(rouletteEntity).setListBet(betEntities);
+            repository.save(rouletteEntity);
+
+            response.setData("Bet Done!, on roulette" + request.getRouletteId() + "Good Luck :)");
+
+            return response;
+        } else {
+            response.setData("Roulette "+ request.getRouletteId() + " is not open, look for another roulette" );
+            return response;
+        }
+
     }
 }

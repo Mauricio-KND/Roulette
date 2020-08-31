@@ -1,5 +1,7 @@
 package roulette.domain;
 
+import roulette.entities.UserEntity;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
@@ -30,5 +32,9 @@ public class User {
 
     public void setName ( String name ) {
         this.name = name;
+    }
+
+    public UserEntity createUser() {
+        return new UserEntity();
     }
 }
