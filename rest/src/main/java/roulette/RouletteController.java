@@ -5,13 +5,13 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.*;
 import java.util.Optional;
 
 import org.springframework.hateoas.EntityModel;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import roulette.domain.Bet;
+import roulette.domain.Roulette;
+import roulette.entities.Result;
+import roulette.entities.RouletteEntity;
+import roulette.presentation.RequestBetOnRoulette;
+import roulette.presentation.Response;
 
 // tag::hateoas-imports[]
 
@@ -29,65 +29,49 @@ class RouletteController {
 	// Aggregate root
 
 	// tag::get-aggregate-root[]
-	@GetMapping("/createRoulette")
-	public EntityModel<Roulette> getId() {
-		Roulette roulette = new Roulette();
-		repository.save(roulette);
-		return EntityModel.of(roulette, //
-				linkTo(methodOn(RouletteController.class).getId()).withSelfRel());
-	}
-	// end::get-aggregate-root[]
-
-	@GetMapping("/openRoulette/{id}")
-	public EntityModel<Roulette.Response> openRoulette (@PathVariable long id ) {
-		Optional<Roulette> optionalRoulette = repository.findById(id);
-		Roulette roulette = optionalRoulette.isPresent() ? optionalRoulette.get() : null;
-		if (roulette != null) {
-			roulette.setStatus("Open");
-			Roulette.Response response = new Roulette.Response();
-			response.result = Roulette.Result.Succeed.result;
-			return EntityModel.of(response,
-					linkTo(methodOn(RouletteController.class).openRoulette(id)).withSelfRel());
-		}
-		return EntityModel.of(new Roulette.Response());
+	@PostMapping("/createRoulette")
+	public Response<Long> getId() {
+		Response<Long> response = new Response<>();
+		response.setData(new Roulette().createRoulette(repository).getId());
+		return response;
 	}
 
-/*
-	@PostMapping("/betOnRoulette")
-	public EntityModel<Roulette> betOnRoulette(
-			@RequestBody Long id_roulette,
-			@RequestBody Boolean color,
-			@RequestBody int betAmount
-	) {
-		Optional<Roulette> optionalRoulette = repository.findById(id_roulette);
-		Roulette roulette = optionalRoulette.isPresent() ? optionalRoulette.get() : null;
-		if (roulette != null) {
-			roulette.setBetAmount(betAmount);
-			roulette.setColor(color);
-		}
-		return EntityModel.of(roulette,
-				linkTo(methodOn(RouletteController.class).getId()).withSelfRel());
+	@PostMapping("/openRoulette")
+	public Response<Long> openRoulette ( @RequestParam long id ) {
+
+		Response<Long> response = new Response<>();
+		response.setData(id);
+		return response;
 	}
-*/
+
 
 	@PostMapping("/betOnRoulette")
-	EntityModel<Roulette> betOnRoulette(
-			@RequestBody Long id_roulette,
-			@RequestBody int betNumber,
-			@RequestBody int betAmount
+	public Response<String> betOnRoulette(
+			@RequestBody RequestBetOnRoulette request
 	) {
-		Optional<Roulette> optionalRoulette = repository.findById(id_roulette);
-		Roulette roulette = optionalRoulette.isPresent() ? optionalRoulette.get() : null;
-		if (roulette != null) {
-			roulette.setBetAmount(betAmount);
-			roulette.setBetNumber(betNumber);
-		}
-		return EntityModel.of(roulette,
-				linkTo(methodOn(RouletteController.class).getId()).withSelfRel());
+		Response<String> response = new Response<>();
+		response.setData(request.getRouletteBetAmount() +"");
+		return response;
 	}
+
+
+//	@PostMapping("/betOnRoulette")
+//	EntityModel<RouletteEntity> betOnRoulette(
+//			@RequestBody Long id_roulette,
+//			@RequestBody int betNumber,
+//			@RequestBody int betAmount
+//	) {
+//		Optional<RouletteEntity> optionalRoulette = repository.findById(id_roulette);
+//		RouletteEntity rouletteEntity = optionalRoulette.isPresent() ? optionalRoulette.get() : null;
+//		if (rouletteEntity != null) {
+//
+//		}
+//		return EntityModel.of(rouletteEntity,
+//				linkTo(methodOn(RouletteController.class).getId()).withSelfRel());
+//	}
 
 //	@PostMapping("/employees")
-//	Roulette newEmployee( @RequestBody Roulette newRoulette ) {
+//	RouletteEntity newEmployee( @RequestBody RouletteEntity newRoulette ) {
 //		return repository.save(newRoulette);
 //	}
 //
@@ -95,9 +79,9 @@ class RouletteController {
 //
 ////	// tag::get-single-item[]
 ////	@GetMapping("/employees/{id}")
-////	EntityModel<Roulette> one( @PathVariable Long id) {
+////	EntityModel<RouletteEntity> one( @PathVariable Long id) {
 ////
-////		Roulette roulette = repository.findById(id) //
+////		RouletteEntity roulette = repository.findById(id) //
 ////				.orElseThrow(() -> new RouletteNotFoundException(id));
 ////
 //
@@ -105,7 +89,7 @@ class RouletteController {
 //	// end::get-single-item[]
 //
 //	@PutMapping("/employees/{id}")
-//	Roulette replaceEmployee( @RequestBody Roulette newRoulette, @PathVariable Long id) {
+//	RouletteEntity replaceEmployee( @RequestBody RouletteEntity newRoulette, @PathVariable Long id) {
 //
 //		return repository.findById(id) //
 //				.map(roulette -> {
